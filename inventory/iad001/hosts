@@ -1,0 +1,39 @@
+localhost ansible_connection=local ansible_python_interpreter=/opt/local/bin/python3.10
+
+# ## Configure 'ip' variable to bind kubernetes services on a
+# ## different ip than the default iface
+# ## We should set etcd_member_name for etcd cluster. The node that is not a etcd member do not need to set the value, or can set the empty string value.
+[all]
+hosta ansible_host=64.30.133.9 ip=64.30.133.9 etcd_member_name=etcda
+hostb ansible_host=64.30.133.10 ip=64.30.133.10 etcd_member_name=etcdb
+hostc ansible_host=64.30.133.11 ip=64.30.133.11 etcd_member_name=etcdc 
+hostd ansible_host=64.30.133.12 ip=64.30.133.12
+hoste ansible_host=64.30.133.13 ip=64.30.133.13
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3.6
+
+# ## configure a bastion host if your nodes are not directly reachable
+# [bastion]
+# bastion ansible_host=x.x.x.x ansible_user=some_user
+
+[kube_control_plane]
+hosta
+hostb
+hostc
+
+[etcd]
+hosta
+hostb
+hostc
+
+[kube_node]
+hostd
+hoste
+
+[calico_rr]
+
+[k8s_cluster:children]
+kube_node
+kube_control_plane
+#calico_rr
